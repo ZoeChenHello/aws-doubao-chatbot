@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>Doubao Chatbot Demo</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 700px; margin: 20px auto; }
+    h1 { text-align: center; }
+    #chat {
+      border: 1px solid #ccc;
+      padding: 10px;
+      height: 400px;
+      overflow-y: auto;
+      margin-bottom: 10px;
+      background: #fafafa;
+    }
+    .msg { margin: 5px 0; }
+    .user { color: #0066cc; }
+    .bot { color: #008000; }
+    #input { width: 80%; padding: 6px; }
+    button { padding: 6px 12px; }
+  </style>
+</head>
+<body>
+  <h1>Doubao Chatbot Demo</h1>
+  <div id="chat"></div>
+  <form id="form">
+    <input type="text" id="input" placeholder="输入你的问题..." autocomplete="off" required />
+    <button type="submit">发送</button>
+  </form>
+
+  <script>
+    // ====== 这里换成你的 API Gateway 地址（带上 /chat）=======
+    const apiUrl = "https://go802uamw1.execute-api.us-east-1.amazonaws.com/chat";
+    // =====================================================
+
+    const chatDiv = document.getElementById('chat');
+    const form = document.getElementById('form');
+    const input = document.getElementById('input');
+
+    function addMessage(text, type) {
+      const div = document.createElement('div');
+      div.className = 'msg ' + type;
+      div.textContent = (type === 'user' ? '你：' : '豆包：') + text;
+      chatDiv.appendChild(div);
+      chatDiv.scrollTop = chatDiv.scrollHeight;
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const text = input.value.trim();
+      if (!text) return;
+
+      addMessage(text, 'user');
+      input.value = '';
+
+      try {
+        const res = await fetch(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: text })
+        });
+        const data = await res.json();
+        addMessage(data.reply || '（没有收到回复）', 'bot');
+      } catch (err) {
+        console.error(err);
+        addMessage('请求失败，请打开浏览器控制台查看错误', 'bot');
+      }
+    });
+  </script>
+</body>
+</html>

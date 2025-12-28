@@ -1,0 +1,17 @@
+# Python 缓存
+__pycache__/
+*.pyc
+
+# 虚拟环境
+.venv/
+venv/
+
+# Lambda 打包中间产物
+lambda/package/
+lambda/lambda_chatbot.zip
+
+# VS Code 配置
+.vscode/
+
+# 其他可能的临时文件
+*.log
